@@ -15,6 +15,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::post('/test', 'Test\IndexController@index');
+
 /**
  * 微信路由
  */

@@ -12,7 +12,10 @@ class IndexController extends Controller
     {
         $info = file_get_contents('php://input') ?: $request->input();
         $res = is_array($info) ? json_encode($info) : (is_string($info) ? $info : json_encode($info));
-        $result = Redis::getInstance()->rpush('jingjiekeji.push.info', $res);
+        $redis = Redis::getInstance();
+        $time = time();
+        $result = $redis->rpush('jingjiekeji.push.info.' . $time, $res);
+        $redis->expire('jingjiekeji.push.info.' . $time, 7200);
         var_dump($result);
     }
 

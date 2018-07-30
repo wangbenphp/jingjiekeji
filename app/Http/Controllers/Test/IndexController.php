@@ -15,7 +15,7 @@ class IndexController extends Controller
         $redis = Redis::getInstance();
         $time = time();
         $result = $redis->rpush('jingjiekeji.push.info.' . $time, $res);
-        $redis->expire('jingjiekeji.push.info.' . $time, 7200);
+        $redis->expire('jingjiekeji.push.info.' . $time, 120);
         var_dump($result);
     }
 

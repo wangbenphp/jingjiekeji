@@ -18,16 +18,17 @@ class IndexController extends Controller
             $redis = Redis::getInstance();
             //step3: 处理数据
             $machine_id  = $data['id'];//嗅探器设备 id
-            $create_time = substr($data['time'], -13, 8);
+            $create_time = str_replace(':', '', substr($data['time'], -13, 8));
             if ($data['data']) {
                 foreach ($data['data'] as $k => $v) {
-                    $redis->hmset('range.info.by.time.' . $create_time . '.mac:' . $v['mac'], [$machine_id => json_encode($data['data'][$k])]);
-                    $infos = $redis->hgetall('range.info.by.time.' . $create_time . '.mac:' . $v['mac']);
+                    $mac = str_replace(':', '', $v['mac']);
+                    $redis->hmset('range.info.by.time.' . $create_time . '.mac:' . $mac, [$machine_id => json_encode($data['data'][$k])]);
+                    $infos = $redis->hgetall('range.info.by.time.' . $create_time . '.mac:' . $mac);
                     if (count($infos) == 3) {
                         //定位计算
-                        //$redis->del('range.info.by.time.' . $create_time . '.mac:' . $v['mac']);
+                        //$redis->del('range.info.by.time.' . $create_time . '.mac:' . $mac);
                     }
-                    $redis->expire('range.info.by.time.' . $create_time . '.mac:' . $v['mac'], 120);
+                    $redis->expire('range.info.by.time.' . $create_time . '.mac:' . $mac, 120);
                 }
             }
         }

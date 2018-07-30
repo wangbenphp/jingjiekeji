@@ -27,7 +27,7 @@ class IndexController extends Controller
                         //定位计算
                         //$redis->del('range.info.by.time.' . $create_time . '.mac:' . $v['mac']);
                     }
-                    $redis->expire('range.info.by.time.' . $create_time . '.mac:' . $v['mac'], 600);
+                    $redis->expire('range.info.by.time.' . $create_time . '.mac:' . $v['mac'], 120);
                 }
             }
         }

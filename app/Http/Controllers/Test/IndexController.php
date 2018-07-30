@@ -21,7 +21,7 @@ class IndexController extends Controller
             $create_time = substr($data['time'], -13, 8);
             if ($data['data']) {
                 foreach ($data['data'] as $k => $v) {
-                    $redis->hmset('range.info.by.time.' . $create_time . '.mac:' . $v['mac'], [$machine_id => json_encode($data[$k])]);
+                    $redis->hmset('range.info.by.time.' . $create_time . '.mac:' . $v['mac'], [$machine_id => json_encode($data['data'][$k])]);
                     $infos = $redis->hgetall('range.info.by.time.' . $create_time . '.mac:' . $v['mac']);
                     if (count($infos) == 3) {
                         //定位计算

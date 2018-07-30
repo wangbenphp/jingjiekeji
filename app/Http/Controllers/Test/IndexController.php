@@ -10,7 +10,7 @@ class IndexController extends Controller
 {
     public function index(Request $request)
     {
-        $info = file_get_contents('php://input') ?: $request->input();
+        $info = file_get_contents('php://input');
         $res = is_array($info) ? json_encode($info) : (is_string($info) ? $info : json_encode($info));
         $redis = Redis::getInstance();
         $time = time();

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Test;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use WbPHPLibraryPackage\Service\Redis;
+use Illuminate\Support\Facades\DB;
 
 class IndexController extends Controller
 {
@@ -70,6 +71,13 @@ class IndexController extends Controller
         $redis = Redis::getInstance();
         $redis->hmset($time . $mac, ['x' => $X, 'y' => $Y]);
         $redis->expire($time . $mac, 1200);
+
+        DB::table('test')->insert([
+            'mac'         => $mac,
+            'x'           => $X,
+            'y'           => $Y,
+            'create_time' => time()
+        ]);
         return true;
     }
 

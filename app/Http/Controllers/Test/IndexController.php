@@ -43,4 +43,32 @@ class IndexController extends Controller
         $data3 = json_decode($info[2], true);
         unset($info);
     }
+
+    /**
+     * 设置坐标
+     */
+    public function setting(Request $request)
+    {
+        //A 00f9282e
+        //B 00f92830
+        //C 00f9282f
+        $a_x = $request->input('a_x');
+        $a_y = $request->input('a_y');
+        $b_x = $request->input('b_x');
+        $b_y = $request->input('b_y');
+        $c_x = $request->input('c_x');
+        $c_y = $request->input('c_y');
+        if (!is_numeric($a_x) || !is_numeric($a_y) || !is_numeric($b_x) || !is_numeric($b_y) || !is_numeric($c_x) || !is_numeric($c_y)) {
+            echo '参数不合法';exit;
+        }
+        $res = Redis::getInstance()->hmset('a.b.c.x.y.info', [
+            'a_x' => $a_x,
+            'a_y' => $a_y,
+            'b_x' => $b_x,
+            'b_y' => $b_y,
+            'c_x' => $c_x,
+            'c_y' => $c_y,
+        ]);
+        print_r($res);
+    }
 }

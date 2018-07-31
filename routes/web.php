@@ -19,6 +19,8 @@ Route::post('/test', 'Test\IndexController@index');
 
 Route::get('/chuli', 'Test\IndexController@chuli');
 
+Route::post('/setting', 'Test\IndexController@setting');
+
 /**
  * 微信路由
  */

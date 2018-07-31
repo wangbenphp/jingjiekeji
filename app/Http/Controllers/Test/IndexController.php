@@ -71,12 +71,19 @@ class IndexController extends Controller
         $redis = Redis::getInstance();
         $redis->hmset($time . $mac, ['x' => $X, 'y' => $Y]);
         $redis->expire($time . $mac, 1200);
-
+        $time = time();
         DB::table('test')->insert([
             'mac'         => $mac,
             'x'           => $X,
             'y'           => $Y,
-            'create_time' => time()
+            'create_time' => $time
+        ]);
+        DB::table('test1')->insert([
+            'mac'         => $mac,
+            'a'           => $a_r,
+            'b'           => $b_r,
+            'c'           => $c_r,
+            'create_time' => $time
         ]);
         return true;
     }

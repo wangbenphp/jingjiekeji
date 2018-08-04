@@ -9,9 +9,8 @@ $('.login_button').click(function () {
         dataType: 'json',
         success: function (data) {
             if (data.code == 0) {
-                //window.location.href = "/admin/index";
+                window.location.href = "/admin/index";
                 //$(window).attr('location', '/admin/index');
-                alert(666);
             } else {
                 alert(data.message);
             }

@@ -12,6 +12,8 @@ class BaseController extends Controller
             $info = $request->session()->all();
             if (isset($info['admin_user_info'])) {
                 if (is_array($info['admin_user_info'])) {
+                    $menu = logic('AdminMenu')->get();
+                    $request->merge(['menu' => $menu]);
                     return $next($request);
                 }
             }

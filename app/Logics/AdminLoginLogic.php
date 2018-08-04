@@ -2,8 +2,6 @@
 
 namespace App\Logics;
 
-use WbPHPLibraryPackage\Service\Redis;
-
 /**
  * 管理员后台登录
  * @author wangben

@@ -153,3 +153,14 @@ if (!function_exists('get_tb_num')) {
         return $num % $tbNum;
     }
 }
+
+/**
+ * 页面跳转
+ */
+if (!function_exists('redirection')) {
+    function redirection($route)
+    {
+        $route = ltrim($route, '/');
+        header('Location: ' . $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/' . $route);exit;
+    }
+}

@@ -14,7 +14,7 @@ class LoginController extends Controller
     public function index()
     {
         $adminInfo = Session::get('admin_user_info');
-        if ($adminInfo) {
+        if (is_array($adminInfo)) {
             echo '登录成功';exit;
         }
         return view('admin.login.index');

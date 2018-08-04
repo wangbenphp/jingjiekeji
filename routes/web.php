@@ -43,4 +43,6 @@ Route::group(['namespace'=>'Admin','prefix'=>'admin'], function () {
     Route::get('/login', 'LoginController@index');
     //登录验证
     Route::post('/logindata', 'LoginController@login');
+    //首页
+    Route::get('/index', 'IndexController@index');
 });

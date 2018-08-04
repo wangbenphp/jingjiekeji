@@ -34,3 +34,13 @@ Route::group(['namespace'=>'Wechat','prefix'=>'wechat'], function () {
         Route::get('/index', 'ShareController@index');
     });
 });
+
+/**
+ * 管理后台
+ */
+Route::group(['namespace'=>'Admin','prefix'=>'admin'], function () {
+    //登录界面
+    Route::get('/login', 'LoginController@index');
+    //登录验证
+    Route::post('/logindata', 'LoginController@login');
+});

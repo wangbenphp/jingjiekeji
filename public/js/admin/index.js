@@ -10,7 +10,6 @@ $('.login_button').click(function () {
         success: function (data) {
             if (data.code == 0) {
                 window.location.href = "/admin/index";
-                //$(window).attr('location', '/admin/index');
             } else {
                 alert(data.message);
             }

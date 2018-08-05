@@ -37,6 +37,11 @@ class CoordinateController extends Controller
 
     public function one(Request $request)
     {
+        //$mac = $request->input('mac');
+        $times = $request->input('times') > 0 ? $request->input('times') : 20;
+        //$start_time = $request->input('start_time') ? strtotime($request->input('start_time')) : null;
+        //$end_time = $request->input('end_time') ? strtotime($request->input('end_time')) : null;
+
         $anim = 'anims' . time() . mt_rand(100, 999);
         $num = mt_rand(60, 100);
         $bl  = sprintf("%.2f", (100 / $num));
@@ -54,7 +59,7 @@ class CoordinateController extends Controller
         }
         $str .= '}';
         return response()->json(successReturn([
-            'time'   => mt_rand(20, 100),
+            'time'   => $times,
             'values' => $str,
             'anim'   => $anim,
         ]));

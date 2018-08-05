@@ -19,3 +19,21 @@ $('.login_button').click(function () {
         }
     });
 });
+
+$('#showsssss') .click(function () {
+    $.ajax({
+        type: 'get',
+        url: "/admin/getshow",
+        data: {},
+        success: function(data) {
+            if (data.code == 0) {
+                if (data.data) {
+                    //alert(data.data.values);
+                    var style = document.styleSheets[0];
+                    $('.mubiao').css("animation", "anims " + data.data.time + "s");
+                    style.insertRule(data.data.values);
+                }
+            }
+        }
+    });
+});

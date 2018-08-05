@@ -47,4 +47,8 @@ Route::group(['namespace'=>'Admin','prefix'=>'admin'], function () {
     Route::get('/index', 'IndexController@index');
     //获取坐标列表
     Route::get('/getcoordinate', 'CoordinateController@get');
+    //坐标显示
+    Route::any('/show', 'IndexController@show');
+    //坐标轨迹
+    Route::any('/getshow', 'CoordinateController@one');
 });

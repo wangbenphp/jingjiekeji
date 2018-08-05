@@ -15,3 +15,12 @@
     float: left;
     position: absolute;
 }
+
+.mubiao {
+    width: 5px;
+    height: 5px;
+    border-radius: 10px;
+    background: red;
+    float: left;
+    position: absolute;
+}

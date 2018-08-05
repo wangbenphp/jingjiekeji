@@ -12,27 +12,15 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return '深圳静界科技有限公司';
 });
 
-Route::post('/test', 'Test\IndexController@index');
-
-Route::get('/chuli', 'Test\IndexController@chuli');
-
-Route::post('/setting', 'Test\IndexController@setting');
-
 /**
- * 微信路由
+ * 定位数据
  */
-Route::group(['namespace'=>'Wechat','prefix'=>'wechat'], function () {
-    //微信公众号入口
-    Route::any('/index', 'IndexController@index');
-    //微信授权
-    Route::any('/auth', 'IndexController@auth');
-    //分享路由
-    Route::group(['prefix' => 'share'], function () {
-        Route::get('/index', 'ShareController@index');
-    });
+Route::group(['namespace'=>'Location','prefix'=>'location'], function () {
+    //Datasky
+    Route::any('/datasky', 'DataskyController@index');
 });
 
 /**

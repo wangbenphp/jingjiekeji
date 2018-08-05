@@ -12,9 +12,6 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        '/wechat/index',//微信公众号入口
-        '/wechat/auth',//微信授权
-        '/test',
-        '/setting'
+        '/location/datasky',
     ];
 }

@@ -23,9 +23,25 @@ class GongshiLogic extends BaseLogic
         return ['x' => $X, 'y' => $Y];
     }
 
-    public function three()
+    public function three($ax, $ay, $bx, $by, $cx, $cy, $a, $b, $c)
     {
-        //
+        $A = $this->A3($ax, $ay, $bx, $by, $a, $b);
+        $B = $this->B3($ax, $ay, $cx, $cy, $a, $c);
+        $X = ($A*($cy-$ay) - $B*($by-$ay)) / ((($bx-$ax) * ($cy-$ay)) - (($cx-$ax) * ($by-$ay)));
+        $Y = ($A*($cx-$ax) - $B*($bx-$ax)) / ((($by-$ay) * ($cx-$ax)) - (($cy-$ay) * ($bx-$ax)));
+        return ['x' => $X, 'y' => $Y];
+    }
+
+    private function A3($ax, $ay, $bx, $by, $a, $b)
+    {
+        $A = (($a*$a) - ($b*$b) - ($ax*$ax) - ($ay*$ay) + ($bx*$bx) + ($by*$by)) / 2;
+        return $A;
+    }
+
+    private function B3($ax, $ay, $cx, $cy, $a, $c)
+    {
+        $B = (($a*$a) - ($c*$c) - ($ax*$ax) - ($ay*$ay) + ($cx*$cx) + ($cy*$cy)) / 2;
+        return $B;
     }
 
     private function A4($ax, $ay, $bx, $by, $a, $b)

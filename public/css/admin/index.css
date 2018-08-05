@@ -1,0 +1,17 @@
+.guiji_table {
+    width: 404px;
+    height: 404px;
+    background: #ABCDEF;
+    margin-left: 32%;
+    margin-top: 80px;
+    position: absolute;
+}
+
+.zuibiaodian {
+    width: 5px;
+    height: 5px;
+    border-radius: 10px;
+    background: red;
+    float: left;
+    position: absolute;
+}

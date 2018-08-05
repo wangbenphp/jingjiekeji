@@ -45,5 +45,6 @@ Route::group(['namespace'=>'Admin','prefix'=>'admin'], function () {
     Route::post('/logindata', 'LoginController@login');
     //首页
     Route::get('/index', 'IndexController@index');
-    Route::get('/menu', 'IndexController@menu');
+    //获取坐标列表
+    Route::get('/getcoordinate', 'CoordinateController@get');
 });

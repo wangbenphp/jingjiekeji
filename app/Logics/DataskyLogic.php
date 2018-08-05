@@ -22,7 +22,7 @@ class DataskyLogic extends BaseLogic
             $time = strtotime(date('Y-m-d ' . substr($data['time'], -13, 8)));//时间戳
             $rate = ($data['rate'] >= 1) ? $data['rate'] : 1;//发送频率
             if ($data['data']) {
-                $this->merge($m_id, $rate, $time, $data);
+                $this->merge($m_id, $rate, $time, $data['data']);
                 return true;
             }
         }

@@ -13,9 +13,8 @@ class DataskyController extends Controller
     public function index(Request $request)
     {
         $info = $request->input('data');
-        $frequency = ($request->input('frequency') >= 1) ? $request->input('frequency') : 1;
         if ($info) {
-            $res = logic('Datasky')->data_dispose($info, $frequency);
+            $res = logic('Datasky')->data_dispose($info);
             if ($res) {
                 return response()->json(successReturn());
             }

@@ -28,7 +28,6 @@ $('#showsssss') .click(function () {
         success: function(data) {
             if (data.code == 0) {
                 if (data.data) {
-                    //alert(data.data.values);
                     var style = document.styleSheets[0];
                     $('.mubiao').css("animation", "anims " + data.data.time + "s");
                     style.insertRule(data.data.values);

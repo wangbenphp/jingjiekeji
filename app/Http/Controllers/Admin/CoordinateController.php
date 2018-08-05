@@ -37,10 +37,11 @@ class CoordinateController extends Controller
 
     public function one(Request $request)
     {
+        $anim = 'anims' . time() . mt_rand(100, 999);
         $num = mt_rand(60, 100);
         $bl  = sprintf("%.2f", (100 / $num));
         $bili = 0;
-        $str = '@keyframes anims{';
+        $str = '@keyframes ' . $anim . '{';
         for ($i=0; $i<$num; $i++) {
             if ($i == 0) {
                 $bili = '0';
@@ -55,6 +56,7 @@ class CoordinateController extends Controller
         return response()->json(successReturn([
             'time'   => mt_rand(20, 100),
             'values' => $str,
+            'anim'   => $anim,
         ]));
     }
 }

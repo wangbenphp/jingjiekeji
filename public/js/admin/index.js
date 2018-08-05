@@ -29,7 +29,7 @@ $('#showsssss') .click(function () {
             if (data.code == 0) {
                 if (data.data) {
                     var style = document.styleSheets[0];
-                    $('.mubiao').css("animation", "anims " + data.data.time + "s");
+                    $('.mubiao').css("animation",  data.data.anim + " " + data.data.time + "s");
                     style.insertRule(data.data.values);
                 }
             }

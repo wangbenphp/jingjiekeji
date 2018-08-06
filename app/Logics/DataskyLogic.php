@@ -37,37 +37,39 @@ class DataskyLogic extends BaseLogic
         $redis = Redis::getInstance();
         $m_xy  = $this->get_m_xy($num);
         foreach ($data as $k => $v) {
-            $mac = $v['mac'];
             $range = $v['range'];
-            if ($rate == 1) {
-                $key = 'datasky.range.info.by.time.' . $time . '.mac:' . $mac;
-            } else {
-                $create_key = false;
-                for ($i = ($time - $rate); $i <= ($time + $rate); $i++) {
-                    //step1: 判断key是否存在
-                    $step1 = $redis->keys('datasky.range.info.by.time.' . $i . '.mac:' . $mac);
-                    if ($step1) {
-                        //step2: 判断m_id是否存在
-                        $step2 = $redis->hexists($step1[0], $mac);
-                        if (!$step2) {
-                            $key = 'datasky.range.info.by.time.' . $i . '.mac:' . $mac;
-                            break;
+            if ($range <= 4) {
+                $mac = $v['mac'];
+                if ($rate == 1) {
+                    $key = 'datasky.range.info.by.time.' . $time . '.mac:' . $mac;
+                } else {
+                    $create_key = false;
+                    for ($i = ($time - $rate); $i <= ($time + $rate); $i++) {
+                        //step1: 判断key是否存在
+                        $step1 = $redis->keys('datasky.range.info.by.time.' . $i . '.mac:' . $mac);
+                        if ($step1) {
+                            //step2: 判断m_id是否存在
+                            $step2 = $redis->hexists($step1[0], $mac);
+                            if (!$step2) {
+                                $key = 'datasky.range.info.by.time.' . $i . '.mac:' . $mac;
+                                break;
+                            }
+                        } else {
+                            $create_key = true;
                         }
-                    } else {
-                        $create_key = true;
+                    }
+                    if ($create_key) {
+                        $key = 'datasky.range.info.by.time.' . $time . '.mac:' . $mac;
                     }
                 }
-                if ($create_key) {
-                    $key = 'datasky.range.info.by.time.' . $time . '.mac:' . $mac;
+                $redis->hmset($key, [$m_id => $range]);
+                $get_data = $redis->hgetall($key);
+                if (count($get_data) == $num) {
+                    $this->xy($get_data, $m_xy, $mac, $time, $num);
+                    $redis->del($key);
+                } else {
+                    $redis->expire($key, 600);
                 }
-            }
-            $redis->hmset($key, [$m_id => $range]);
-            $get_data = $redis->hgetall($key);
-            if (count($get_data) == $num) {
-                $this->xy($get_data, $m_xy, $mac, $time, $num);
-                $redis->del($key);
-            } else {
-                $redis->expire($key, 600);
             }
         }
         return true;

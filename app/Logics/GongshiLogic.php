@@ -18,8 +18,8 @@ class GongshiLogic extends BaseLogic
     {
         $A = $this->A4($ax, $ay, $bx, $by, $a, $b);
         $B = $this->B4($cx, $cy, $dx, $dy, $c, $d);
-        $X = ($A*($dy-$cy) - $B*($by-$ay)) / ((($bx-$ax) * ($dy-$cy)) - (($dx-$cx) * ($by-$ay)));
-        $Y = ($A*($dx-$cx) - $B*($bx-$ax)) / ((($by-$ay) * ($dx-$cx)) - (($dy-$cy) * ($bx-$ax)));
+        $X = (($A*($dy-$cy) - $B*($by-$ay)) / ((($bx-$ax) * ($dy-$cy)) - (($dx-$cx) * ($by-$ay))));
+        $Y = (($A*($dx-$cx) - $B*($bx-$ax)) / ((($by-$ay) * ($dx-$cx)) - (($dy-$cy) * ($bx-$ax))));
         return ['x' => $X, 'y' => $Y];
     }
 

@@ -19,7 +19,6 @@ class DataskyLogic extends BaseLogic
         $data = json_decode($info, true);
         if ($data) {
             $m_id = $data['id'];//嗅探器设备ID
-            Redis::getInstance()->rpush('xxxxxxxx', $m_id . '_' . time());
             $time = strtotime(date('Y-m-d ' . substr($data['time'], -13, 8)));//时间戳
             $rate = ($data['rate'] >= 1) ? $data['rate'] : 1;//发送频率
             if ($data['data']) {
@@ -83,19 +82,20 @@ class DataskyLogic extends BaseLogic
     {
         $gongshiM = logic('Gongshi');
         $keys_list = array_keys($m_xy);
+        $values_list = array_values($m_xy);
         if ($num == 4) {
             $ak = rtrim($keys_list[0], '_x');
             $bk = rtrim($keys_list[2], '_x');
             $ck = rtrim($keys_list[4], '_x');
             $dk = rtrim($keys_list[6], '_x');
-            $ax = $keys_list[0];
-            $ay = $keys_list[1];
-            $bx = $keys_list[2];
-            $by = $keys_list[3];
-            $cx = $keys_list[4];
-            $cy = $keys_list[5];
-            $dx = $keys_list[6];
-            $dy = $keys_list[7];
+            $ax = $values_list[0];
+            $ay = $values_list[1];
+            $bx = $values_list[2];
+            $by = $values_list[3];
+            $cx = $values_list[4];
+            $cy = $values_list[5];
+            $dx = $values_list[6];
+            $dy = $values_list[7];
             $a = $info[$ak];
             $b = $info[$bk];
             $c = $info[$ck];

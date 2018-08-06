@@ -68,7 +68,7 @@ class DataskyLogic extends BaseLogic
                     $this->xy($get_data, $m_xy, $mac, $time, $num);
                     $redis->del($key);
                 } else {
-                    $redis->expire($key, 600);
+                    $redis->expire($key, 120);
                 }
             }
         }

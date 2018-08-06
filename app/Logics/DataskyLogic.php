@@ -19,6 +19,7 @@ class DataskyLogic extends BaseLogic
         $data = json_decode($info, true);
         if ($data) {
             $m_id = $data['id'];//嗅探器设备ID
+            Redis::getInstance()->rpush('xxxxxxxx', $m_id . '_' . time());
             $time = strtotime(date('Y-m-d ' . substr($data['time'], -13, 8)));//时间戳
             $rate = ($data['rate'] >= 1) ? $data['rate'] : 1;//发送频率
             if ($data['data']) {

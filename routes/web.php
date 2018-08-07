@@ -39,4 +39,8 @@ Route::group(['namespace'=>'Admin','prefix'=>'admin'], function () {
     Route::any('/show', 'IndexController@show');
     //坐标轨迹
     Route::any('/getshow', 'CoordinateController@one');
+    //MAC绑定
+    Route::get('/bind', 'IndexController@bind');
+    //指定MAC坐标返回
+    Route::any('/getbinds', 'CoordinateController@bind');
 });

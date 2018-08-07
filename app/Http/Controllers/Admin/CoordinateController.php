@@ -64,4 +64,29 @@ class CoordinateController extends Controller
             'anim'   => $anim,
         ]));
     }
+
+    public function bind(Request $request)
+    {
+        $mac1 = $request->input('mac1');
+        $mac2 = $request->input('mac2');
+        $mac3 = $request->input('mac3');
+        $mac4 = $request->input('mac4');
+        $num = 0;
+        if ($mac1) {
+            $num += 1;
+        }
+        if ($mac2) {
+            $num += 1;
+        }
+        if ($mac3) {
+            $num += 1;
+        }
+        if ($mac4) {
+            $num += 1;
+        }
+        for ($i=0; $i<$num; $i++) {
+            $data[] = ['x' => mt_rand(0, 400), 'y' => mt_rand(0, 400)];
+        }
+        return response()->json(successReturn($data));
+    }
 }

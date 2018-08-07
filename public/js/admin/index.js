@@ -20,23 +20,6 @@ $('.login_button').click(function () {
     });
 });
 
-// $('#showsssss') .click(function () {
-//     $.ajax({
-//         type: 'get',
-//         url: "/admin/getshow",
-//         data: {},
-//         success: function(data) {
-//             if (data.code == 0) {
-//                 if (data.data) {
-//                     var style = document.styleSheets[0];
-//                     $('.mubiao').css("animation",  data.data.anim + " " + data.data.time + "s");
-//                     style.insertRule(data.data.values);
-//                 }
-//             }
-//         }
-//     });
-// });
-
 $('#selec_tmac_show') .click(function () {
     var mac = $('input[name="mac"]').val();
     var times = $('input[name="times"]').val();
@@ -60,8 +43,8 @@ $('#selec_tmac_show') .click(function () {
                 }
             }
         },
-        // error: function() {
-        //     alert('请求失败')
-        // }
+        error: function() {
+            alert('请求失败')
+        }
     });
 });

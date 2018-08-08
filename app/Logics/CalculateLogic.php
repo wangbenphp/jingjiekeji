@@ -64,7 +64,8 @@ class CalculateLogic extends BaseLogic
                 $redis->hmset($rssi_key, [$m_id => $rssi]);
                 $range_data = $redis->hgetall($key);
                 if (count($range_data) == $num) {
-                    $rssi_data = $redis->hgetall($rssi_key);
+                    $rssi_data   = $redis->hgetall($rssi_key);
+                    $combination = $this->choose_combination($rssi_data);
                     $this->xy($range_data, $m_xy, $mac, $time, $num);
                     $redis->del($key);
                     $redis->del($rssi_key);
@@ -84,5 +85,36 @@ class CalculateLogic extends BaseLogic
     {
         $new_ressi_info = array_value_sort_with_key($rssi_info);
         $str = $new_ressi_info[0] . $new_ressi_info[1] . $new_ressi_info[2];
+        $string = str_disorder_compare($str, 'abc');
+        if (!$string) {
+            $string = str_disorder_compare($str, 'bcd');
+            if (!$string) {
+                $string = str_disorder_compare($str, 'cda');
+                if (!$string) {
+                    $string = str_disorder_compare($str, 'dac');
+                }
+            }
+        }
+        return $string;
+    }
+
+    public function abc()
+    {
+        //
+    }
+
+    public function bcd()
+    {
+        //
+    }
+
+    public function cda()
+    {
+        //
+    }
+
+    public function dac()
+    {
+        //
     }
 }

@@ -164,3 +164,47 @@ if (!function_exists('redirection')) {
         header('Location: ' . $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/' . $route);exit;
     }
 }
+
+/**
+ * 一维数组键值排序保留键名
+ */
+if (!function_exists('array_value_sort_with_key')) {
+    function array_value_sort_with_key ($arr, $orderby = 'desc') {
+        $new_array = [];
+        $new_sort  = [];
+        $orderby   = strtolower($orderby);
+        foreach($arr as $v) {
+            $new_array[] = $v;
+        }
+        if ($orderby == 'asc') {
+            asort($new_array);
+        } else {
+            arsort($new_array);
+        }
+        foreach ($new_array as $v) {
+            foreach ($arr as $kk => $vv) {
+                if ($v == $vv) {
+                    $new_sort[$kk] = $vv;
+                    unset($arr[$kk]);
+                    break;
+                }
+            }
+        }
+        return $new_sort;
+    }
+}
+
+/**
+ * 字符串无序比较
+ */
+if (!function_exists('str_disorder_compare')) {
+    function str_disorder_compare($str, $target)
+    {
+        $a = str_split($str);
+        $b = str_split($target);
+        if (count(array_intersect($a, $b)) == count($a)) {
+            return $target;
+        }
+        return false;
+    }
+}

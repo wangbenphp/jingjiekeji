@@ -41,7 +41,7 @@ class CalculateLogic extends BaseLogic
         $class  = logic('Gongshi');
         $abcd   = $redis->hgetall('a.b.c.d.xy.info');
         $m_abcd = $abcd[$m_id];
-        $db     = logic('Location/Datas');
+        $db     = model('Location/Datas');
         foreach ($data as $k => $v) {
             $range = $v['range'];
             if ($range <= 5.65) {

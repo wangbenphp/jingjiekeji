@@ -19,4 +19,23 @@ class Datas extends Model
             ]);
         return $res;
     }
+
+    public function get_info_by_time($time)
+    {
+        $res = DB::table('datas')
+            ->select('x', 'y')
+            ->where('create_time', $time)
+            ->get();
+        return $res ? o2a($res) : null;
+    }
+
+    public function selects($mac)
+    {
+        $res = DB::table('datas')
+            ->select('x', 'y')
+            ->where('mac', $mac)
+            ->orderByRaw('id ASC')
+            ->get();
+        return $res ? o2a($res) : null;
+    }
 }

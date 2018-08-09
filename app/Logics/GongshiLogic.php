@@ -9,28 +9,28 @@ namespace App\Logics;
  */
 class GongshiLogic extends BaseLogic
 {
-    public function abc($a, $b, $c, $l = 4)
+    public function abc($a, $b, $c, $d, $l = 4)
     {
         $x = ((($l * $l) + ($b * $b) - ($c * $c)) / (2 * $l));
         $y = ((($l * $l) + ($a * $a) - ($b * $b)) / (2 * $l));
         return ['x' => $x, 'y' => $y];
     }
 
-    public function bcd($b, $c, $d, $l = 4)
+    public function bcd($a, $b, $c, $d, $l = 4)
     {
         $x = ((($l * $l) + ($b * $b) - ($c * $c)) / (2 * $l));
         $y = ((($l * $l) + ($d * $d) - ($c * $c)) / (2 * $l));
         return ['x' => $x, 'y' => $y];
     }
 
-    public function cda($c, $d, $a, $l = 4)
+    public function cda($a, $b, $c, $d, $l = 4)
     {
         $x = ((($l * $l) + ($a * $a) - ($d * $d)) / (2 * $l));
         $y = ((($l * $l) + ($d * $d) - ($c * $c)) / (2 * $l));
         return ['x' => $x, 'y' => $y];
     }
 
-    public function dab($d, $a, $b, $l = 4)
+    public function dab($a, $b, $c, $d, $l = 4)
     {
         $x = ((($l * $l) + ($a * $a) - ($d * $d)) / (2 * $l));
         $y = ((($l * $l) + ($a * $a) - ($b * $b)) / (2 * $l));

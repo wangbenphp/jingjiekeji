@@ -7,13 +7,13 @@ use Illuminate\Support\Facades\DB;
 
 class Datas extends Model
 {
-    public function adds($mac, $x, $y, $time)
+    public function adds($xy, $mac, $time)
     {
         $res = DB::table('datas')
             ->insert([
                 'mac'         => $mac,
-                'x'           => $x,
-                'y'           => $y,
+                'x'           => $xy['x'],
+                'y'           => $xy['y'],
                 'time'        => $time,
                 'create_time' => time()
             ]);

@@ -47,7 +47,7 @@ class CalculateLogic extends BaseLogic
             if ($range <= 5.65) {
                 $mac  = $v['mac'];//手机MAC地址
                 $rssi = $v['rssi'];//信号强度
-                if ($rate != 1) {
+                //if ($rate != 1) {
                     for ($i = ($time - $rate); $i <= ($time + $rate); $i++) {
                         //step1: 判断key是否存在
                         $step1 = $redis->keys('datasky.range.info.by.time.' . $i . '.mac:' . $mac);
@@ -60,7 +60,7 @@ class CalculateLogic extends BaseLogic
                             }
                         }
                     }
-                }
+                //}
                 $key      = 'datasky.range.info.by.time.' . $time . '.mac:' . $mac;
                 $rssi_key = 'datasky.range.info.by.time.' . $time . '.ressi.mac:' . $mac;
                 $redis->hmset($key, [$m_id => $range]);

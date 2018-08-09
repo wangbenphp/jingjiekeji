@@ -44,7 +44,7 @@ class CalculateLogic extends BaseLogic
         $db     = model('Location/Datas');
         foreach ($data as $k => $v) {
             $range = $v['range'];
-            if ($range <= 1.65) {
+            if ($range <= 5.65) {
                 $mac  = $v['mac'];//手机MAC地址
                 $rssi = $v['rssi'];//信号强度
                 //if ($rate != 1) {
@@ -84,7 +84,7 @@ class CalculateLogic extends BaseLogic
         return true;
     }
 
-    private function jisuan($combination, $range_data, $class, $l = 0.68)
+    private function jisuan($combination, $range_data, $class, $l = 4)
     {
         $a = $range_data['a'];
         $b = $range_data['b'];

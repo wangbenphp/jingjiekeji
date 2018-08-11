@@ -26,7 +26,7 @@ Route::group(['namespace'=>'Location','prefix'=>'location'], function () {
 /**
  * 管理后台
  */
-Route::group(['namespace'=>'Admin','prefix'=>'admin'], function () {
+Route::group(['namespace'=>'Admin', 'prefix'=>'admin'], function () {
     //登录界面
     Route::get('/login', 'LoginController@index');
     //登录验证
@@ -43,4 +43,9 @@ Route::group(['namespace'=>'Admin','prefix'=>'admin'], function () {
     Route::get('/bind', 'IndexController@bind');
     //指定MAC坐标返回
     Route::any('/getbinds', 'CoordinateController@bind');
+});
+
+//定时任务
+Route::group(['namespace'=>'Crontab', 'prefix'=>'crontab'], function () {
+    Route::get('/datasky', 'DataskyController@xy_to_db');
 });

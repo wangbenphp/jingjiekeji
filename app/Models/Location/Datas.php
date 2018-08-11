@@ -20,6 +20,19 @@ class Datas extends Model
         return $res;
     }
 
+    public function timer($x, $y, $mac, $time)
+    {
+        $res = DB::table('datas')
+            ->insert([
+                'mac'         => $mac,
+                'x'           => $x,
+                'y'           => $y,
+                'time'        => $time,
+                'create_time' => time()
+            ]);
+        return $res;
+    }
+
     public function get_info_by_time($time)
     {
         $res = DB::table('datas')

@@ -122,4 +122,26 @@ class DataskyLogic extends BaseLogic
         }
         return $string;
     }
+
+    /**
+     * 定时任务队列toDB
+     */
+    public function xy_to_db($num = 20)
+    {
+        $redis = Redis::getInstance();
+        $lens  = $redis->llen('xy.info.list.queue');
+        if ($lens) {
+            $db = model('Location/Datas');
+            for ($i = 1; $i <= $num; $i++) {
+                $info = $redis->lpop('xy.info.list.queue');
+                if (!$info) {
+                    break;
+                }
+                $data = json_decode($info, true);
+                $db->timer($data['x'], $data[y], $data['mac'], $data['time']);
+            }
+            return true;
+        }
+        return false;
+    }
 }

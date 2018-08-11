@@ -12,21 +12,25 @@ use WbPHPLibraryPackage\Service\Redis;
 class DataskyLogic extends BaseLogic
 {
     /**
-     * 数据处理
+     * 数据分类处理
      */
-    public function data_dispose($info)
+    public function classify($data)
     {
-        $data = json_decode($info, true);
-        if ($data) {
-            $m_id = $data['id'];//嗅探器设备ID
-            $time = strtotime(date('Y-m-d ' . substr($data['time'], -13, 8)));//时间戳
-            $rate = ($data['rate'] >= 1) ? $data['rate'] : 1;//发送频率
-            if ($data['data']) {
-                $this->merge($m_id, $rate, $time, $data['data']);
-                return true;
-            }
+        if (!$data) {
+            return false;
         }
-        return false;
+        $data = json_decode($data, true);
+        if (!is_array($data)) {
+            return false;
+        }
+        $abcd_m_id = Redis::getInstance()->hgetall('a.b.c.d.xy.info');
+        $m_id = $abcd_m_id[$data['id']];//嗅探器设备ID转换成abcd
+        $time = strtotime(date('Y-m-d ' . substr($data['time'], -13, 8)));//时间戳
+        $rate = ($data['rate'] >= 1) ? $data['rate'] : 1;//发送频率
+        if (isset($data['data']) && $data['data']) {
+            $this->merge($m_id, $rate, $time, $data['data'], 4);
+            return true;
+        }
     }
 
     /**
@@ -35,15 +39,13 @@ class DataskyLogic extends BaseLogic
     private function merge($m_id, $rate, $time, $data, $num = 4)
     {
         $redis = Redis::getInstance();
-        $m_xy  = $this->get_m_xy($num);
+        $class = logic('Gongshi');
         foreach ($data as $k => $v) {
             $range = $v['range'];
-            if ($range <= 4) {
-                $mac = $v['mac'];
-                if ($rate == 1) {
-                    $key = 'datasky.range.info.by.time.' . $time . '.mac:' . $mac;
-                } else {
-                    $create_key = false;
+            if ($range <= 5.65) {
+                $mac  = $v['mac'];//手机MAC地址
+                $rssi = $v['rssi'];//信号强度
+                if ($rate != 1) {
                     for ($i = ($time - $rate); $i <= ($time + $rate); $i++) {
                         //step1: 判断key是否存在
                         $step1 = $redis->keys('datasky.range.info.by.time.' . $i . '.mac:' . $mac);
@@ -51,24 +53,27 @@ class DataskyLogic extends BaseLogic
                             //step2: 判断m_id是否存在
                             $step2 = $redis->hexists($step1[0], $mac);
                             if (!$step2) {
-                                $key = 'datasky.range.info.by.time.' . $i . '.mac:' . $mac;
+                                $time = $i;
                                 break;
                             }
-                        } else {
-                            $create_key = true;
                         }
                     }
-                    if ($create_key) {
-                        $key = 'datasky.range.info.by.time.' . $time . '.mac:' . $mac;
-                    }
                 }
+                $key      = 'datasky.range.info.by.time.' . $time . '.mac:' . $mac;
+                $rssi_key = 'datasky.range.info.by.time.' . $time . '.ressi.mac:' . $mac;
                 $redis->hmset($key, [$m_id => $range]);
-                $get_data = $redis->hgetall($key);
-                if (count($get_data) == $num) {
-                    $this->xy($get_data, $m_xy, $mac, $time, $num);
+                $redis->hmset($rssi_key, [$m_id => $rssi]);
+                $data_len = $redis->hlen($key);
+                if ($data_len == $num) {
+                    $range_data  = $redis->hgetall($key);
                     $redis->del($key);
+                    $rssi_data   = $redis->hgetall($rssi_key);
+                    $combination = $this->choose_combination($rssi_data);//根据信号强弱判断出组合：abc,bcd,cda,dac
+                    $xy = $this->jisuan($combination, $range_data, $class);
+                    $this->xy_to_queue($xy, $mac, $time, $redis);
                 } else {
                     $redis->expire($key, 120);
+                    $redis->expire($rssi_key, 120);
                 }
             }
         }
@@ -76,65 +81,45 @@ class DataskyLogic extends BaseLogic
     }
 
     /**
-     * 计算XY
+     * 把XY坐标加入队列存入DB
      */
-    private function xy($info, $m_xy, $mac, $time, $num)
+    private function xy_to_queue($xy, $mac, $time, $redis)
     {
-        $gongshiM = logic('Gongshi');
-        $keys_list = array_keys($m_xy);
-        $values_list = array_values($m_xy);
-        if ($num == 4) {
-            $ak = rtrim($keys_list[0], '_x');
-            $bk = rtrim($keys_list[2], '_x');
-            $ck = rtrim($keys_list[4], '_x');
-            $dk = rtrim($keys_list[6], '_x');
-            $ax = $values_list[0];
-            $ay = $values_list[1];
-            $bx = $values_list[2];
-            $by = $values_list[3];
-            $cx = $values_list[4];
-            $cy = $values_list[5];
-            $dx = $values_list[6];
-            $dy = $values_list[7];
-            $a = $info[$ak];
-            $b = $info[$bk];
-            $c = $info[$ck];
-            $d = $info[$dk];
-            $xy = $gongshiM->four($ax, $ay, $bx, $by, $cx, $cy, $dx, $dy, $a, $b, $c, $d);
-        } else {
-            $ak = $keys_list[0];
-            $bk = $keys_list[1];
-            $ck = $keys_list[2];
-            $ax = $m_xy[$ak . '_x'];
-            $ay = $m_xy[$ak . '_y'];
-            $bx = $m_xy[$bk . '_x'];
-            $by = $m_xy[$bk . '_y'];
-            $cx = $m_xy[$ck . '_x'];
-            $cy = $m_xy[$ck . '_y'];
-            $a = $info[$ak];
-            $b = $info[$bk];
-            $c = $info[$ck];
-            $xy = $gongshiM->three($ax, $ay, $bx, $by, $cx, $cy, $a, $b, $c);
-        }
-        $this->save_mac_x_y_to_db($mac, $xy['x'], $xy['y'], $time);
-        return true;
-    }
-
-    private function save_mac_x_y_to_db($mac, $x, $y, $time)
-    {
-        return model('Location/Datas')->adds($mac, $x, $y, $time);
+        $data = json_encode(['x' => $xy['x'], 'y' => $xy['y'], 'mac' => $mac, 'time' => $time]);
+        return $redis->rpush('xy.info.list.queue', $data);
     }
 
     /**
-     * 获取基站XY坐标
+     * 计算出XY坐标
      */
-    private function get_m_xy($num = 4)
+    private function jisuan($combination, $range_data, $class, $l = 4)
     {
-        if ($num == 4) {
-            $key = 'a.b.c.d.x.y.info';
-        } else {
-            $key = 'a.b.c.x.y.info';
+        $a = $range_data['a'];
+        $b = $range_data['b'];
+        $c = $range_data['c'];
+        $d = $range_data['d'];
+        $xy = call_user_func_array([$class, $combination], [$a, $b, $c, $d, $l]);
+        return $xy;
+    }
+
+    /**
+     * 选择组合
+     */
+    private function choose_combination($rssi_info)
+    {
+        $new_info = array_value_sort_with_key($rssi_info);
+        $new_ressi_info = array_keys($new_info);
+        $str = $new_ressi_info[0] . $new_ressi_info[1] . $new_ressi_info[2];
+        $string = str_disorder_compare($str, 'abc');
+        if (!$string) {
+            $string = str_disorder_compare($str, 'bcd');
+            if (!$string) {
+                $string = str_disorder_compare($str, 'cda');
+                if (!$string) {
+                    $string = str_disorder_compare($str, 'dac');
+                }
+            }
         }
-        return Redis::getInstance()->hgetall($key);
+        return $string;
     }
 }

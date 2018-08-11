@@ -14,7 +14,7 @@ class DataskyController extends Controller
     {
         $info = $request->input('data');
         if ($info) {
-            $res = logic('Calculate')->classify($info);
+            $res = logic('Datasky')->classify($info);
             if ($res) {
                 return response()->json(successReturn());
             }

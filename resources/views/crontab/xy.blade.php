@@ -16,11 +16,11 @@
                 success: function(data) {
                     console.log(data);
                 },
-                error: function () {
-                    alert('连接失败!');
+                error: function (data) {
+                    console.log(data);
                 }
             });
-        }, 500)
+        }, 1000)
     </script>
 </body>
 </html>

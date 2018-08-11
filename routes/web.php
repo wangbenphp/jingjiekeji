@@ -47,6 +47,8 @@ Route::group(['namespace'=>'Admin', 'prefix'=>'admin'], function () {
 
 //定时任务
 Route::group(['namespace'=>'Crontab', 'prefix'=>'crontab'], function () {
+    Route::get('/db', 'DataskyController@db');
+    Route::get('/xy', 'DataskyController@xy');
     //存入数据库队列
     Route::get('/todb', 'DataskyController@xy_to_db');
     //计算XY队列

@@ -7,6 +7,16 @@ use App\Http\Controllers\Controller;
 
 class DataskyController extends Controller
 {
+    public function db()
+    {
+        return view('crontab.db');
+    }
+
+    public function xy()
+    {
+        return view('crontab.xy');
+    }
+
     public function xy_to_db(Request $request)
     {
         $num  = $request->input('num') ?: 50;

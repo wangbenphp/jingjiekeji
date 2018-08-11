@@ -39,7 +39,6 @@ class DataskyLogic extends BaseLogic
     private function merge($m_id, $rate, $time, $data, $num = 4)
     {
         $redis = Redis::getInstance();
-        $class = logic('Gongshi');
         foreach ($data as $k => $v) {
             $range = $v['range'];
             if ($range <= 5.65) {
@@ -65,12 +64,7 @@ class DataskyLogic extends BaseLogic
                 $redis->hmset($rssi_key, [$m_id => $rssi]);
                 $data_len = $redis->hlen($key);
                 if ($data_len == $num) {
-                    $range_data  = $redis->hgetall($key);
-                    $redis->del($key);
-                    $rssi_data   = $redis->hgetall($rssi_key);
-                    $combination = $this->choose_combination($rssi_data);//根据信号强弱判断出组合：abc,bcd,cda,dac
-                    $xy = $this->jisuan($combination, $range_data, $class);
-                    $this->xy_to_queue($xy, $mac, $time, $redis);
+                    $this->full_range_to_queue($time, $mac, $redis);//加入计算XY的队列
                 } else {
                     $redis->expire($key, 120);
                     $redis->expire($rssi_key, 120);
@@ -87,6 +81,15 @@ class DataskyLogic extends BaseLogic
     {
         $data = json_encode(['x' => $xy['x'], 'y' => $xy['y'], 'mac' => $mac, 'time' => $time]);
         return $redis->rpush('xy.info.list.queue', $data);
+    }
+
+    /**
+     * 把收集到4个macid的range值存入队列
+     */
+    private function full_range_to_queue($time, $mac, $redis)
+    {
+        $data = $time . '-' . $mac;
+        return $redis->rpush('full.range.get.info.list', $data);
     }
 
     /**
@@ -138,7 +141,33 @@ class DataskyLogic extends BaseLogic
                     break;
                 }
                 $data = json_decode($info, true);
-                $db->timer($data['x'], $data[y], $data['mac'], $data['time']);
+                $db->timer($data['x'], $data['y'], $data['mac'], $data['time']);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public function data_to_xy_to_queue($num = 20)
+    {
+        $redis = Redis::getInstance();
+        $lens  = $redis->llen('full.range.get.info.list');
+        if ($lens) {
+            $class = logic('Gongshi');
+            for ($i = 1; $i <= $num; $i++) {
+                $info = $redis->lpop('full.range.get.info.list');
+                if (!$info) {
+                    break;
+                }
+                $data     = explode('-', $info);
+                $key      = 'datasky.range.info.by.time.' . $data[0] . '.mac:' . $data[1];
+                $rssi_key = 'datasky.range.info.by.time.' . $data[0] . '.ressi.mac:' . $data[1];
+                $range_data  = $redis->hgetall($key);
+                $redis->del($key);
+                $rssi_data   = $redis->hgetall($rssi_key);
+                $combination = $this->choose_combination($rssi_data);//根据信号强弱判断出组合：abc,bcd,cda,dac
+                $xy = $this->jisuan($combination, $range_data, $class);
+                $this->xy_to_queue($xy, $data[1], $data[0], $redis);
             }
             return true;
         }

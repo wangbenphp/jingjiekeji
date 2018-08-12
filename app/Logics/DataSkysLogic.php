@@ -2,7 +2,7 @@
 
 namespace App\Logics;
 
-use WbPHPLibraryPackage\Service\Redis;
+use Illuminate\Support\Facades\Redis;
 
 /**
  * DataSky 数据处理逻辑
@@ -23,7 +23,7 @@ class DataSkysLogic extends BaseLogic
         if (!is_array($data)) {
             return false;
         }
-        $abcd_m_id = Redis::getInstance()->hgetall('a.b.c.d.xy.info');
+        $abcd_m_id = Redis::hgetall('a.b.c.d.xy.info');
         $m_id = $abcd_m_id[$data['id']];//嗅探器设备ID转换成abcd
         $time = strtotime(date('Y-m-d ' . substr($data['time'], -13, 8)));//时间戳
         $rate = ($data['rate'] >= 1) ? $data['rate'] : 1;//发送频率
@@ -38,7 +38,6 @@ class DataSkysLogic extends BaseLogic
      */
     private function merge($m_id, $rate, $time, $data, $num = 4)
     {
-        $redis = Redis::getInstance();
         foreach ($data as $k => $v) {
             $range = $v['range'];
             if ($range <= 5.65) {
@@ -47,10 +46,10 @@ class DataSkysLogic extends BaseLogic
                 if ($rate != 1) {
                     for ($i = ($time - $rate); $i <= ($time + $rate); $i++) {
                         //step1: 判断key是否存在
-                        $step1 = $redis->keys('datasky.range.info.by.time.' . $i . '.mac:' . $mac);
+                        $step1 = Redis::keys('datasky.range.info.by.time.' . $i . '.mac:' . $mac);
                         if ($step1) {
                             //step2: 判断m_id是否存在
-                            $step2 = $redis->hexists($step1[0], $mac);
+                            $step2 = Redis::hexists($step1[0], $mac);
                             if (!$step2) {
                                 $time = $i;
                                 break;
@@ -60,14 +59,14 @@ class DataSkysLogic extends BaseLogic
                 }
                 $key      = 'datasky.range.info.by.time.' . $time . '.mac:' . $mac;
                 $rssi_key = 'datasky.range.info.by.time.' . $time . '.ressi.mac:' . $mac;
-                $redis->hmset($key, [$m_id => $range]);
-                $redis->hmset($rssi_key, [$m_id => $rssi]);
-                $data_len = $redis->hlen($key);
+                Redis::hmset($key, [$m_id => $range]);
+                Redis::hmset($rssi_key, [$m_id => $rssi]);
+                $data_len = Redis::hlen($key);
                 if ($data_len == $num) {
-                    $this->full_range_to_queue($time, $mac, $redis);//加入计算XY的队列
+                    $this->full_range_to_queue($time, $mac);//加入计算XY的队列
                 } else {
-                    $redis->expire($key, 120);
-                    $redis->expire($rssi_key, 120);
+                    Redis::expire($key, 120);
+                    Redis::expire($rssi_key, 120);
                 }
             }
         }
@@ -77,19 +76,19 @@ class DataSkysLogic extends BaseLogic
     /**
      * 把XY坐标加入队列存入DB
      */
-    private function xy_to_queue($xy, $mac, $time, $redis)
+    private function xy_to_queue($xy, $mac, $time)
     {
         $data = json_encode(['x' => $xy['x'], 'y' => $xy['y'], 'mac' => $mac, 'time' => $time]);
-        return $redis->rpush('xy.info.list.queue', $data);
+        return Redis::rpush('xy.info.list.queue', $data);
     }
 
     /**
      * 把收集到4个macid的range值存入队列
      */
-    private function full_range_to_queue($time, $mac, $redis)
+    private function full_range_to_queue($time, $mac)
     {
         $data = $time . '-' . $mac;
-        return $redis->rpush('full.range.get.info.list', $data);
+        return Redis::rpush('full.range.get.info.list', $data);
     }
 
     /**
@@ -131,12 +130,11 @@ class DataSkysLogic extends BaseLogic
      */
     public function xy_to_db($num = 20)
     {
-        $redis = Redis::getInstance();
-        $lens  = $redis->llen('xy.info.list.queue');
+        $lens = Redis::llen('xy.info.list.queue');
         if ($lens) {
             $db = model('Location/Datas');
             for ($i = 1; $i <= $num; $i++) {
-                $info = $redis->lpop('xy.info.list.queue');
+                $info = Redis::lpop('xy.info.list.queue');
                 if (!$info) {
                     break;
                 }
@@ -150,24 +148,23 @@ class DataSkysLogic extends BaseLogic
 
     public function data_to_xy_to_queue($num = 20)
     {
-        $redis = Redis::getInstance();
-        $lens  = $redis->llen('full.range.get.info.list');
+        $lens = Redis::llen('full.range.get.info.list');
         if ($lens) {
             $class = logic('Gongshi');
             for ($i = 1; $i <= $num; $i++) {
-                $info = $redis->lpop('full.range.get.info.list');
+                $info = Redis::lpop('full.range.get.info.list');
                 if (!$info) {
                     break;
                 }
                 $data     = explode('-', $info);
                 $key      = 'datasky.range.info.by.time.' . $data[0] . '.mac:' . $data[1];
                 $rssi_key = 'datasky.range.info.by.time.' . $data[0] . '.ressi.mac:' . $data[1];
-                $range_data  = $redis->hgetall($key);
-                $redis->del($key);
-                $rssi_data   = $redis->hgetall($rssi_key);
+                $range_data  = Redis::hgetall($key);
+                Redis::del($key);
+                $rssi_data   = Redis::hgetall($rssi_key);
                 $combination = $this->choose_combination($rssi_data);//根据信号强弱判断出组合：abc,bcd,cda,dac
                 $xy = $this->jisuan($combination, $range_data, $class);
-                $this->xy_to_queue($xy, $data[1], $data[0], $redis);
+                $this->xy_to_queue($xy, $data[1], $data[0]);
             }
             return true;
         }

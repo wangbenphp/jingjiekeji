@@ -20,7 +20,7 @@ class DataskyController extends Controller
     public function xy_to_db(Request $request)
     {
         $num  = $request->input('num') ?: 50;
-        $info = logic('Datasky')->xy_to_db($num);
+        $info = logic('DataSkys')->xy_to_db($num);
         if ($info) {
             return response()->json(successReturn());
         }
@@ -30,7 +30,7 @@ class DataskyController extends Controller
     public function list_to_xy(Request $request)
     {
         $num  = $request->input('num') ?: 50;
-        $info = logic('Datasky')->data_to_xy_to_queue($num);
+        $info = logic('DataSkys')->data_to_xy_to_queue($num);
         if ($info) {
             return response()->json(successReturn());
         }

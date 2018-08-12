@@ -159,7 +159,7 @@ class DataSkysLogic extends BaseLogic
                 $data     = explode('-', $info);
                 $key      = 'datasky.range.info.by.time.' . $data[0] . '.mac:' . $data[1];
                 $rssi_key = 'datasky.range.info.by.time.' . $data[0] . '.ressi.mac:' . $data[1];
-                $range_data  = Redis::hgetall($key);
+                $range_data = Redis::hgetall($key);
                 Redis::del($key);
                 $rssi_data   = Redis::hgetall($rssi_key);
                 $combination = $this->choose_combination($rssi_data);//根据信号强弱判断出组合：abc,bcd,cda,dac
